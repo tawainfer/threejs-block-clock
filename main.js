@@ -26,12 +26,12 @@ class BlockClock {
     if(this.time != this.lastCreateTime) {
       console.log(this.time);
       this.lastCreateTime = this.time;
-      this.#editBlocks(this.time);
+      this.#changeBlocksState(this.time);
     }
   }
 
   #getBlockPatterns(time) {
-    let patterns = [
+    let numberPatterns = [
       '111101101101111',
       '010010010010010',
       '111001111100111',
@@ -44,29 +44,29 @@ class BlockClock {
       '111101111001111'
     ]
 
-    let isCreateBlocks = new Array(5);
+    let blockPatterns = new Array(5);
     for(let i = 0; i < 5; i++) {
-      isCreateBlocks[i] = new Array(0);
+      blockPatterns[i] = new Array(0);
     }
 
     for(let i = 0; i < time.length; i++) {
       if('0' <= time[i] && time[i] <= '9') {
-        let pattern = patterns[Number(time[i])];
-        for(let j = 0; j < pattern.length; j++) {
-          isCreateBlocks[Math.floor(j / 3)].push(pattern[j] == '1' ? true : false);
+        let numberPattern = numberPatterns[Number(time[i])];
+        for(let j = 0; j < numberPattern.length; j++) {
+          blockPatterns[Math.floor(j / 3)].push(numberPattern[j] == '1' ? true : false);
         }
       } else {
         for(let j = 0; j < 5; j++) {
-          isCreateBlocks[j].push(j % 2 == 1 ? true : false);
+          blockPatterns[j].push(j % 2 == 1 ? true : false);
         }
       }
 
       for(let j = 0; j < 5; j++) {
-        isCreateBlocks[j].push(false);
+        blockPatterns[j].push(false);
       }
     }
 
-    return isCreateBlocks;
+    return blockPatterns;
   }
 
   #createBlock(x, y, z, color) {
@@ -81,12 +81,12 @@ class BlockClock {
   }
 
   #createBlocks(time, scene) {
-    let isCreateBlocks = this.#getBlockPatterns(time);
+    let blockPatterns = this.#getBlockPatterns(time);
 
     this.blocks = new Array(0);
-    for(let i = 0; i < isCreateBlocks.length; i++) {
-      for(let j = 0; j < isCreateBlocks[i].length; j++) {
-        if(isCreateBlocks[i][j]) {
+    for(let i = 0; i < blockPatterns.length; i++) {
+      for(let j = 0; j < blockPatterns[i].length; j++) {
+        if(blockPatterns[i][j]) {
           this.blocks.push(this.#createBlock(i * 100, j * 100, 0, 0x4682b4));
         } else {
           this.blocks.push(this.#createBlock(i * 100, j * 100, 0, 0x000000));
@@ -99,12 +99,12 @@ class BlockClock {
     });
   }
 
-  #editBlocks(time) {
-    let isCreateBlocks = this.#getBlockPatterns(time);
-    for(let i = 0; i < isCreateBlocks.length; i++) {
-      for(let j = 0; j < isCreateBlocks[i].length; j++) {
-        let block = this.blocks[i * isCreateBlocks[i].length + j];
-        if(isCreateBlocks[i][j]) {
+  #changeBlocksState(time) {
+    let blockPatterns = this.#getBlockPatterns(time);
+    for(let i = 0; i < blockPatterns.length; i++) {
+      for(let j = 0; j < blockPatterns[i].length; j++) {
+        let block = this.blocks[i * blockPatterns[i].length + j];
+        if(blockPatterns[i][j]) {
           block.material.color.setHex(0x4682b4);
         } else {
           block.material.color.setHex(0x000000);
