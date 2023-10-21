@@ -10,26 +10,15 @@ class BlockClock {
     this.z = 0;
     this.offsetX = 2;
     this.offsetY = 13;
-    this.blockSize = 100;
+    this.blockSize = 1;
+    this.scale = 1;
     this.padding = 0;
     this.maxCoordinate = 1000000;
     this.totalColorPattern = 16777216;
     this.time = '00:00:00';
     this.#createBlocks(scene);
   }
-
-  setTime(hour, minute, second) {
-    this.hour = hour % 24;
-    this.minute = minute % 60;
-    this.second = second % 60;
-
-    let h = ('0' + this.hour).slice(-2);
-    let m = ('0' + this.minute).slice(-2);
-    let s = ('0' + this.second).slice(-2);
-    this.time = `${h}:${m}:${s}`;
-    this.#updateBlocksPosition();
-  }
-
+  
   #getBlockPatterns() {
     let numberPatterns = [
       '111101101101111',
@@ -60,7 +49,7 @@ class BlockClock {
           blockPatterns[j].push(j % 2 == 1 ? true : false);
         }
       }
-
+      
       for(let j = 0; j < 5; j++) {
         blockPatterns[j].push(false);
       }
@@ -75,7 +64,7 @@ class BlockClock {
     let block = new THREE.Mesh(geometry, material);
     return block;
   }
-
+  
   #createBlocks(scene) {
     let blockPatterns = this.#getBlockPatterns();
 
@@ -89,6 +78,18 @@ class BlockClock {
     this.blocks.forEach(block => {
       scene.add(block);
     });
+    this.#updateBlocksPosition();
+  }
+  
+  setTime(hour, minute, second) {
+    this.hour = hour % 24;
+    this.minute = minute % 60;
+    this.second = second % 60;
+
+    let h = ('0' + this.hour).slice(-2);
+    let m = ('0' + this.minute).slice(-2);
+    let s = ('0' + this.second).slice(-2);
+    this.time = `${h}:${m}:${s}`;
     this.#updateBlocksPosition();
   }
 
@@ -105,8 +106,8 @@ class BlockClock {
     for(let i = 0; i < blockPatterns.length; i++) {
       for(let j = 0; j < blockPatterns[i].length; j++) {
         let block = this.blocks[i * blockPatterns[i].length + j];
-        let x = i * (this.blockSize + this.padding) - ((this.blockSize + this.padding) * this.offsetX) + this.x;
-        let y = j * (this.blockSize + this.padding) - ((this.blockSize + this.padding) * this.offsetY) + this.y;
+        let x = i * (this.blockSize * this.scale + this.padding) - ((this.blockSize * this.scale + this.padding) * this.offsetX) + this.x;
+        let y = j * (this.blockSize * this.scale + this.padding) - ((this.blockSize * this.scale + this.padding) * this.offsetY) + this.y;
         let z = blockPatterns[i][j] ? 0 : this.maxCoordinate + this.z;
 
         block.position.set(x, y, z);
@@ -124,6 +125,23 @@ class BlockClock {
     this.blocks.forEach(block => {
       block.material.color.setHex(this.color);
     });
+  }
+
+  setScale(scale) {
+    this.scale = scale;
+    this.#updateBlocksScale();
+  }
+
+  #updateBlocksScale() {
+    this.blocks.forEach(block => {
+      block.scale.set(this.scale, this.scale, this.scale);
+    });
+    this.#updateBlocksPosition();
+  }
+
+  setPadding(padding) {
+    this.padding = padding;
+    this.#updateBlocksPosition();
   }
 }
 
@@ -149,6 +167,9 @@ function init() {
   scene.add(light);
 
   let clock = new BlockClock(scene);
+  clock.setScale(100);
+  clock.setPadding(-20);
+  console.log(clock);
   renderer.render(scene, camera);
 
   let lastHMD = `${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`;
