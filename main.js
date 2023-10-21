@@ -113,6 +113,17 @@ class BlockClock {
       }
     }
   }
+
+  setColor(color) {
+    this.color = color % this.totalColorPattern;
+    this.#updateBlocksColor();
+  }
+
+  #updateBlocksColor() {
+    this.blocks.forEach(block => {
+      block.material.color.setHex(this.color);
+    });
+  }
 }
 
 function init() {
@@ -142,6 +153,7 @@ function init() {
   function render() {
     let date = new Date();
     clock.setTime(date.getHours(), date.getMinutes(), date.getSeconds());
+    clock.setColor(0x4682b4);
     renderer.render(scene, camera);
     requestAnimationFrame(render);
   }
