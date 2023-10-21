@@ -15,7 +15,6 @@ class BlockClock {
     this.maxCoordinate = 1000000;
     this.totalColorPattern = 16777216;
     this.time = '00:00:00';
-    this.lastCreateTime = '';
     this.#createBlocks(scene);
   }
 
@@ -28,12 +27,7 @@ class BlockClock {
     let m = ('0' + this.minute).slice(-2);
     let s = ('0' + this.second).slice(-2);
     this.time = `${h}:${m}:${s}`;
-
-    if(this.time != this.lastCreateTime) {
-      // console.log(this.time);
-      this.lastCreateTime = this.time;
-      this.#updateBlocksPosition();
-    }
+    this.#updateBlocksPosition();
   }
 
   #getBlockPatterns() {
@@ -151,16 +145,21 @@ function init() {
   
   const light = new THREE.DirectionalLight(0xFFFFFF);
   light.intensity = 2;
-  light.position.set(1, 1, 1);
+  light.position.set(0, 0, 3000);
   scene.add(light);
 
   let clock = new BlockClock(scene);
   renderer.render(scene, camera);
 
+  let lastHMD = `${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`;
   function render() {
     let date = new Date();
-    clock.setTime(date.getHours(), date.getMinutes(), date.getSeconds());
-    clock.setColor(0x4682b4);
+    let currentHMD = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+
+    if(lastHMD != currentHMD) {
+      lastHMD = currentHMD;
+      clock.setTime(date.getHours(), date.getMinutes(), date.getSeconds());
+    }
 
     renderer.render(scene, camera);
     requestAnimationFrame(render);
