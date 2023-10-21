@@ -106,8 +106,8 @@ class BlockClock {
     for(let i = 0; i < blockPatterns.length; i++) {
       for(let j = 0; j < blockPatterns[i].length; j++) {
         let block = this.blocks[i * blockPatterns[i].length + j];
-        let x = i * (this.blockSize * this.scale + this.padding) - ((this.blockSize * this.scale + this.padding) * this.offsetX) + this.x;
-        let y = j * (this.blockSize * this.scale + this.padding) - ((this.blockSize * this.scale + this.padding) * this.offsetY) + this.y;
+        let x = (i - this.offsetX) * (this.blockSize * this.scale + this.padding) + this.x;
+        let y = (j - this.offsetY) * (this.blockSize * this.scale + this.padding) + this.y;
         let z = blockPatterns[i][j] ? 0 : this.maxCoordinate + this.z;
 
         block.position.set(x, y, z);
@@ -168,7 +168,6 @@ function init() {
 
   let clock = new BlockClock(scene);
   clock.setScale(100);
-  clock.setPadding(-20);
   console.log(clock);
   renderer.render(scene, camera);
 
