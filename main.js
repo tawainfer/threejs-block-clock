@@ -8,9 +8,13 @@ class BlockClock {
     this.x = 0;
     this.y = 0;
     this.z = 0;
+    this.blockSize = 100;
+    this.padding = 0;
+    this.maxCoordinate = 1000000;
+    this.totalColorPattern = 16777216;
     this.time = '00:00:00';
     this.lastCreateTime = '';
-    this.#createBlocks(this.time, scene);
+    this.#createBlocks(scene);
   }
 
   setTime(hour, minute, second) {
@@ -24,13 +28,13 @@ class BlockClock {
     this.time = `${h}:${m}:${s}`;
 
     if(this.time != this.lastCreateTime) {
-      console.log(this.time);
+      // console.log(this.time);
       this.lastCreateTime = this.time;
-      this.#changeBlocksPattern(this.time);
+      this.#updateBlocksPosition();
     }
   }
 
-  #getBlockPatterns(time) {
+  #getBlockPatterns() {
     let numberPatterns = [
       '111101101101111',
       '010010010010010',
@@ -49,9 +53,9 @@ class BlockClock {
       blockPatterns[i] = new Array(0);
     }
 
-    for(let i = 0; i < time.length; i++) {
-      if('0' <= time[i] && time[i] <= '9') {
-        let numberPattern = numberPatterns[Number(time[i])];
+    for(let i = 0; i < this.time.length; i++) {
+      if('0' <= this.time[i] && this.time[i] <= '9') {
+        let numberPattern = numberPatterns[Number(this.time[i])];
         for(let j = 0; j < numberPattern.length; j++) {
           blockPatterns[Math.floor(j / 3)].push(numberPattern[j] == '1' ? true : false);
         }
@@ -70,14 +74,14 @@ class BlockClock {
   }
 
   #createBlock() {
-    let geometry = new THREE.BoxGeometry(100, 100, 100);
+    let geometry = new THREE.BoxGeometry(this.blockSize, this.blockSize, this.blockSize);
     let material = new THREE.MeshStandardMaterial({color: 0xffffff});
     let block = new THREE.Mesh(geometry, material);
     return block;
   }
 
-  #createBlocks(time, scene) {
-    let blockPatterns = this.#getBlockPatterns(time);
+  #createBlocks(scene) {
+    let blockPatterns = this.#getBlockPatterns();
 
     this.blocks = new Array(0);
     for(let i = 0; i < blockPatterns.length; i++) {
@@ -89,22 +93,25 @@ class BlockClock {
     this.blocks.forEach(block => {
       scene.add(block);
     });
-    this.#changeBlocksPattern(time);
+    this.#updateBlocksPosition();
   }
 
-  #changeBlocksPattern(time) {
-    let blockPatterns = this.#getBlockPatterns(time);
+  setPosition(x, y, z) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.#updateBlocksPosition();
+  }
+
+  #updateBlocksPosition() {
+    let blockPatterns = this.#getBlockPatterns();
 
     for(let i = 0; i < blockPatterns.length; i++) {
       for(let j = 0; j < blockPatterns[i].length; j++) {
         let block = this.blocks[i * blockPatterns[i].length + j];
-        block.position.set(i * 100, j * 100, (blockPatterns[i][j] ? 0 : Number.MAX_SAFE_INTEGER));
+        block.position.set(i * (this.blockSize + this.padding), j * (this.blockSize + this.padding), (blockPatterns[i][j] ? 0 : this.maxCoordinate));
       }
     }
-  }
-
-  showInformation() {
-    console.log(this.hour, this.minute, this.second, this.x, this.y, this.z, this.time, this.blocks);
   }
 }
 
