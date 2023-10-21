@@ -8,6 +8,8 @@ class BlockClock {
     this.x = 0;
     this.y = 0;
     this.z = 0;
+    this.offsetX = 2;
+    this.offsetY = 13;
     this.blockSize = 100;
     this.padding = 0;
     this.maxCoordinate = 1000000;
@@ -109,7 +111,12 @@ class BlockClock {
     for(let i = 0; i < blockPatterns.length; i++) {
       for(let j = 0; j < blockPatterns[i].length; j++) {
         let block = this.blocks[i * blockPatterns[i].length + j];
-        block.position.set(i * (this.blockSize + this.padding), j * (this.blockSize + this.padding), (blockPatterns[i][j] ? 0 : this.maxCoordinate));
+        let x = i * (this.blockSize + this.padding) - ((this.blockSize + this.padding) * this.offsetX) + this.x;
+        let y = j * (this.blockSize + this.padding) - ((this.blockSize + this.padding) * this.offsetY) + this.y;
+        let z = blockPatterns[i][j] ? 0 : this.maxCoordinate + this.z;
+
+        block.position.set(x, y, z);
+        console.log(block.position.x, block.position.y, block.position.z);
       }
     }
   }
@@ -138,8 +145,8 @@ function init() {
 
   const scene = new THREE.Scene();
 
-  const camera = new THREE.PerspectiveCamera(60, width / height, 1, 10000);
-  camera.position.set(0, 1200, 5000);
+  const camera = new THREE.PerspectiveCamera(45, width / height, 1, 10000);
+  camera.position.set(0, 0, 5000);
   camera.rotation.z = Math.PI / 2;
   
   const light = new THREE.DirectionalLight(0xFFFFFF);
@@ -154,6 +161,7 @@ function init() {
     let date = new Date();
     clock.setTime(date.getHours(), date.getMinutes(), date.getSeconds());
     clock.setColor(0x4682b4);
+
     renderer.render(scene, camera);
     requestAnimationFrame(render);
   }
