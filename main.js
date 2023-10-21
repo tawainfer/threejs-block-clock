@@ -26,7 +26,7 @@ class BlockClock {
     if(this.time != this.lastCreateTime) {
       console.log(this.time);
       this.lastCreateTime = this.time;
-      this.#changeBlocksState(this.time);
+      this.#changeBlocksPattern(this.time);
     }
   }
 
@@ -69,14 +69,10 @@ class BlockClock {
     return blockPatterns;
   }
 
-  #createBlock(x, y, z, color) {
+  #createBlock() {
     let geometry = new THREE.BoxGeometry(100, 100, 100);
-    let material = new THREE.MeshStandardMaterial({color: color});
+    let material = new THREE.MeshStandardMaterial({color: 0xffffff});
     let block = new THREE.Mesh(geometry, material);
-
-    block.position.x = x;
-    block.position.y = y;
-    block.position.z = z;
     return block;
   }
 
@@ -86,29 +82,23 @@ class BlockClock {
     this.blocks = new Array(0);
     for(let i = 0; i < blockPatterns.length; i++) {
       for(let j = 0; j < blockPatterns[i].length; j++) {
-        if(blockPatterns[i][j]) {
-          this.blocks.push(this.#createBlock(i * 100, j * 100, 0, 0x4682b4));
-        } else {
-          this.blocks.push(this.#createBlock(i * 100, j * 100, 0, 0x000000));
-        }
+        this.blocks.push(this.#createBlock());
       }
     }
 
     this.blocks.forEach(block => {
       scene.add(block);
     });
+    this.#changeBlocksPattern(time);
   }
 
-  #changeBlocksState(time) {
+  #changeBlocksPattern(time) {
     let blockPatterns = this.#getBlockPatterns(time);
+
     for(let i = 0; i < blockPatterns.length; i++) {
       for(let j = 0; j < blockPatterns[i].length; j++) {
         let block = this.blocks[i * blockPatterns[i].length + j];
-        if(blockPatterns[i][j]) {
-          block.material.color.setHex(0x4682b4);
-        } else {
-          block.material.color.setHex(0x000000);
-        }
+        block.position.set(i * 100, j * 100, (blockPatterns[i][j] ? 0 : Number.MAX_SAFE_INTEGER));
       }
     }
   }
