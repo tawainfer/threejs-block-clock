@@ -119,8 +119,8 @@ class BlockClock {
 }
 
 function init() {
-  const width = 512;
-  const height = 512;
+  const width = window.innerWidth;
+  const height = window.innerHeight;
 
   const renderer = new THREE.WebGLRenderer({
     canvas: document.querySelector('#myCanvas')
