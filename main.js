@@ -158,10 +158,6 @@ function init() {
     changeRandomColor();
   }
 
-  document.getElementById('js-reset-color').onclick = () => {
-    clock.setColor(0xcccccc);
-  }
-
   document.getElementById('js-left').onclick = () => {
     clock.setPosition(clock.x, clock.y - 1, clock.z);
   }
@@ -194,7 +190,7 @@ function init() {
     clock.setPadding(clock.padding - 0.2);
   }
 
-  document.getElementById('js-return').onclick = () => {
+  document.getElementById('js-reset').onclick = () => {
     clock.setPosition(0, 0, 0);
     clock.setScale(1);
     clock.setPadding(0);
