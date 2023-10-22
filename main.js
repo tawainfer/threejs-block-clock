@@ -200,19 +200,24 @@ function init() {
     clock.setPadding(0);
   }
 
-  const width = window.innerWidth;
-  const height = window.innerHeight;
-
   const scene = new THREE.Scene();
   const renderer = new THREE.WebGLRenderer();
-  renderer.setSize(width, height);
-  renderer.setPixelRatio(window.devicePixelRatio);
-  document.body.appendChild(renderer.domElement);
 
-
-  const camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000);
+  const camera = new THREE.PerspectiveCamera();
   camera.position.set(0, 0, 50);
   camera.rotation.z = Math.PI / 2;
+
+  window.addEventListener('resize', onResize);
+  function onResize() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+  }
+  onResize();
+  document.body.appendChild(renderer.domElement);
 
   const light = new THREE.AmbientLight(0xFFFFFF, 3);
   scene.add(light);
