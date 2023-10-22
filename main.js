@@ -60,7 +60,7 @@ class BlockClock {
 
   #createBlock() {
     let geometry = new THREE.BoxGeometry(this.blockSize, this.blockSize, this.blockSize);
-    let material = new THREE.MeshStandardMaterial({color: 0xffffff});
+    let material = new THREE.MeshPhongMaterial({color: 0xffffff});
     let block = new THREE.Mesh(geometry, material);
     return block;
   }
@@ -149,25 +149,24 @@ function init() {
   const width = window.innerWidth;
   const height = window.innerHeight;
 
-  const renderer = new THREE.WebGLRenderer({
-    canvas: document.querySelector('#myCanvas')
-  });
+  const scene = new THREE.Scene();
+  const renderer = new THREE.WebGLRenderer();
   renderer.setSize(width, height);
   renderer.setPixelRatio(window.devicePixelRatio);
+  document.body.appendChild(renderer.domElement);
 
-  const scene = new THREE.Scene();
 
-  const camera = new THREE.PerspectiveCamera(45, width / height, 1, 10000);
-  camera.position.set(0, 0, 5000);
+  const camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000);
+  camera.position.set(0, 0, 50);
   camera.rotation.z = Math.PI / 2;
-  
+
   const light = new THREE.DirectionalLight(0xFFFFFF);
   light.intensity = 2;
-  light.position.set(0, 0, 3000);
+  light.position.set(0, 0, 100);
   scene.add(light);
 
   let clock = new BlockClock(scene);
-  clock.setScale(100);
+  clock.setColor(0x4682b4);
   console.log(clock);
   renderer.render(scene, camera);
 
