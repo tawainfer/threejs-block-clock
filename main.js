@@ -60,7 +60,7 @@ class BlockClock {
 
   #createBlock() {
     let geometry = new THREE.BoxGeometry(this.blockSize, this.blockSize, this.blockSize);
-    let material = new THREE.MeshPhongMaterial({color: 0xffffff});
+    let material = new THREE.MeshBasicMaterial({color: 0xcccccc});
     let block = new THREE.Mesh(geometry, material);
     return block;
   }
@@ -109,9 +109,7 @@ class BlockClock {
         let x = (i - this.offsetX) * (this.blockSize * this.scale + this.padding) + this.x;
         let y = (j - this.offsetY) * (this.blockSize * this.scale + this.padding) + this.y;
         let z = blockPatterns[i][j] ? 0 : this.maxCoordinate + this.z;
-
         block.position.set(x, y, z);
-        console.log(block.position.x, block.position.y, block.position.z);
       }
     }
   }
@@ -146,6 +144,62 @@ class BlockClock {
 }
 
 function init() {
+  function changeRandomColor() {
+    let rgb = new Array(0);
+    for(let i = 0; i < 3; i++) {
+      rgb.push(Math.floor(Math.random() * 150) + 50);
+    }
+
+    let color = rgb[0] * 256 * 256 + rgb[1] * 256 + rgb[2];
+    clock.setColor(color);
+  }
+
+  document.getElementById('js-change-color').onclick = () => {
+    changeRandomColor();
+  }
+
+  document.getElementById('js-reset-color').onclick = () => {
+    clock.setColor(0xcccccc);
+  }
+
+  document.getElementById('js-left').onclick = () => {
+    clock.setPosition(clock.x, clock.y - 1, clock.z);
+  }
+
+  document.getElementById('js-down').onclick = () => {
+    clock.setPosition(clock.x + 1, clock.y, clock.z);
+  }
+
+  document.getElementById('js-up').onclick = () => {
+    clock.setPosition(clock.x - 1, clock.y, clock.z);
+  }
+
+  document.getElementById('js-right').onclick = () => {
+    clock.setPosition(clock.x, clock.y + 1, clock.z);
+  }
+
+  document.getElementById('js-zoom-in').onclick = () => {
+    clock.setScale(clock.scale * 1.1);
+  }
+
+  document.getElementById('js-zoom-out').onclick = () => {
+    clock.setScale(clock.scale * 0.9);
+  }
+
+  document.getElementById('js-padding-plus').onclick = () => {
+    clock.setPadding(clock.padding + 0.2);
+  }
+
+  document.getElementById('js-padding-minus').onclick = () => {
+    clock.setPadding(clock.padding - 0.2);
+  }
+
+  document.getElementById('js-return').onclick = () => {
+    clock.setPosition(0, 0, 0);
+    clock.setScale(1);
+    clock.setPadding(0);
+  }
+
   const width = window.innerWidth;
   const height = window.innerHeight;
 
@@ -160,24 +214,24 @@ function init() {
   camera.position.set(0, 0, 50);
   camera.rotation.z = Math.PI / 2;
 
-  const light = new THREE.DirectionalLight(0xFFFFFF);
-  light.intensity = 2;
-  light.position.set(0, 0, 100);
+  const light = new THREE.AmbientLight(0xFFFFFF, 3);
   scene.add(light);
 
   let clock = new BlockClock(scene);
-  clock.setColor(0x4682b4);
-  console.log(clock);
   renderer.render(scene, camera);
 
   let lastHMD = `${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`;
   function render() {
     let date = new Date();
     let currentHMD = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
-
+    
     if(lastHMD != currentHMD) {
       lastHMD = currentHMD;
       clock.setTime(date.getHours(), date.getMinutes(), date.getSeconds());
+
+      if(document.getElementById("js-auto-change-color").checked) {
+        changeRandomColor();
+      }
     }
 
     renderer.render(scene, camera);

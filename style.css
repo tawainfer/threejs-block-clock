@@ -2,6 +2,18 @@ body {
   margin: 0;
 }
 
-div {
+body div#operation {
   position: absolute;
+  right: 20px;
+  bottom: 20px;
+}
+
+body div#operation p {
+  color: #ccc;
+  margin-bottom: -20px;
+  font-size: 18px;
+}
+
+body div#operation button {
+  font-size: 18px;
 }
