@@ -153,11 +153,7 @@ function init() {
     let color = rgb[0] * 256 * 256 + rgb[1] * 256 + rgb[2];
     clock.setColor(color);
   }
-
-  document.getElementById('js-change-color').onclick = () => {
-    changeRandomColor();
-  }
-
+  
   document.getElementById('js-left').onclick = () => {
     clock.setPosition(clock.x, clock.y - 1, clock.z);
   }
@@ -177,19 +173,23 @@ function init() {
   document.getElementById('js-zoom-in').onclick = () => {
     clock.setScale(clock.scale * 1.1);
   }
-
+  
   document.getElementById('js-zoom-out').onclick = () => {
     clock.setScale(clock.scale * 0.9);
   }
-
+  
   document.getElementById('js-padding-plus').onclick = () => {
     clock.setPadding(clock.padding + 0.2);
   }
-
+  
   document.getElementById('js-padding-minus').onclick = () => {
     clock.setPadding(clock.padding - 0.2);
   }
-
+  
+    document.getElementById('js-change-color').onclick = () => {
+      changeRandomColor();
+    }
+  
   document.getElementById('js-reset').onclick = () => {
     clock.setPosition(0, 0, 0);
     clock.setScale(1);

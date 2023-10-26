@@ -2,18 +2,41 @@ body {
   margin: 0;
 }
 
-body div#operation {
+body div {
   position: absolute;
-  right: 20px;
   bottom: 20px;
 }
 
+body div p {
+  color: #eee;
+  font-size: 16px;
+  padding-top: 10px;
+}
+
+body div#information {
+  left: 20px;
+}
+
+body div#information a:link, a:visited {
+  color: #eee;
+}
+
+body div#information a:hover {
+	color: #666;
+}
+
+body div#operation {
+  right: 20px;
+  text-align: right;
+}
+
 body div#operation p {
-  color: #ccc;
-  margin-bottom: -20px;
-  font-size: 18px;
+  margin-bottom: -15px;
 }
 
 body div#operation button {
-  font-size: 18px;
+  font-size: 16px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  margin-top: 10px;
 }
