@@ -153,39 +153,50 @@ function init() {
     let color = rgb[0] * 256 * 256 + rgb[1] * 256 + rgb[2];
     clock.setColor(color);
   }
-  
-  document.getElementById('js-left').onclick = () => {
-    clock.setPosition(clock.x, clock.y - 1, clock.z);
-  }
 
-  document.getElementById('js-down').onclick = () => {
-    clock.setPosition(clock.x + 1, clock.y, clock.z);
-  }
+  const interval = 1000 / 30;
 
-  document.getElementById('js-up').onclick = () => {
-    clock.setPosition(clock.x - 1, clock.y, clock.z);
-  }
+  const createMoveProperty = (id, moveX, moveY) => ({id, moveX, moveY});
+  const moveProperties = [
+    createMoveProperty("left", 0, -1),
+    createMoveProperty("down", 1, 0),
+    createMoveProperty("up", -1, 0),
+    createMoveProperty("right", 0, 1),
+  ];
 
-  document.getElementById('js-right').onclick = () => {
-    clock.setPosition(clock.x, clock.y + 1, clock.z);
-  }
+  moveProperties.forEach(move => {
+    document.getElementById(`js-${move['id']}`).addEventListener('pointerdown', () => {
+      const intervalId = setInterval(() => clock.setPosition(clock.x + move['moveX'], clock.y + move['moveY'], clock.z), interval);
+      document.addEventListener('pointerup', () => clearInterval(intervalId), {once: true});
+    });
+  });
 
-  document.getElementById('js-zoom-in').onclick = () => {
-    clock.setScale(clock.scale * 1.1);
-  }
-  
-  document.getElementById('js-zoom-out').onclick = () => {
-    clock.setScale(clock.scale * 0.9);
-  }
-  
-  document.getElementById('js-padding-plus').onclick = () => {
-    clock.setPadding(clock.padding + 0.2);
-  }
-  
-  document.getElementById('js-padding-minus').onclick = () => {
-    clock.setPadding(clock.padding - 0.2);
-  }
-  
+  const createZoomProperty = (id, ratio) => ({id, ratio});
+  const zoomProperties = [
+    createZoomProperty('in', 1.1),
+    createZoomProperty('out', 0.9)
+  ];
+
+  zoomProperties.forEach(zoom => {
+    document.getElementById(`js-zoom-${zoom['id']}`).addEventListener('pointerdown', () => {
+      const intervalId = setInterval(() => clock.setScale(clock.scale * zoom['ratio']), interval);
+      document.addEventListener('pointerup', () => clearInterval(intervalId), {once: true});
+    });
+  });
+
+  const createPaddingProperty = (id, offset) => ({id, offset});
+  const paddingProperties = [
+    createPaddingProperty('plus', 0.1),
+    createPaddingProperty('minus', -0.1)
+  ];
+
+  paddingProperties.forEach(padding => {
+    document.getElementById(`js-padding-${padding['id']}`).addEventListener('pointerdown', () => {
+      const intervalId = setInterval(() => clock.setPadding(clock.padding + padding['offset']), interval);
+      document.addEventListener('pointerup', () => clearInterval(intervalId), {once: true});
+    });
+  });
+
     document.getElementById('js-change-color').onclick = () => {
       changeRandomColor();
     }
